@@ -1,0 +1,14 @@
+[tool.poetry]
+name = "crypto-data-api"
+version = "0.1.0"
+description = "project aims to store and serve crypto data"
+authors = ["Ashish Pandey"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
