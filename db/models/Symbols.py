@@ -11,32 +11,32 @@ class BBPerpetualSymbolsDaily(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     downloaded_at: date = date.today()
     symbol: str
-    status: str
-    contract_type: str
+    status: Optional[str]
+    contract_type: Optional[str]
     copy_trading: Optional[str]
-    has_unified_margin_trade: bool
-    base_coin: str
-    quote_coin: str
-    settle_coin: str
-    launch_time: Optional[int] = Field(sa_column=Column(BigInteger()))
-    delivery_fee_rate: Optional[Decimal] = Field(sa_column=DECIMAL(38, 10))
-    delivery_time: Optional[int] = Field(sa_column=Column(BigInteger()))
-    funding_interval: Optional[int] = Field(sa_column=Column(BigInteger()))
+    has_unified_margin_trade: Optional[str]
+    base_coin: Optional[str]
+    quote_coin: Optional[str]
+    settle_coin: Optional[str]
+    launch_time: Optional[str]
+    delivery_fee_rate: Optional[str]
+    delivery_time: Optional[str]
+    funding_interval: Optional[str]
     # leverage
-    min_leverage: Optional[Decimal] = Field(sa_column=DECIMAL(5, 2))
-    leverage_step: Optional[Decimal] = Field(sa_column=DECIMAL(5, 2))
-    max_leverage: Optional[Decimal] = Field(sa_column=DECIMAL(5, 2))
+    min_leverage: Optional[str]
+    leverage_step: Optional[str]
+    max_leverage: Optional[str]
     # funding rate
-    lower_funding_rate: Optional[Decimal] = Field(sa_column=DECIMAL(38, 10))
-    upper_funding_rate: Optional[Decimal] = Field(sa_column=DECIMAL(38, 10))
+    lower_funding_rate: Optional[str]
+    upper_funding_rate: Optional[str]
     # qty columns
-    min_order_qty: Optional[Decimal] = Field(sa_column=DECIMAL(38, 10))
-    max_order_qty: Optional[Decimal] = Field(sa_column=DECIMAL(38, 10))
-    qty_step: Optional[Decimal] = Field(sa_column=DECIMAL(38, 10))
-    post_only_max_order_qty: Optional[Decimal] = Field(sa_column=DECIMAL(38, 10))
-    max_market_order_qty: Optional[Decimal] = Field(sa_column=DECIMAL(38, 10))
+    min_order_qty: Optional[str]
+    max_order_qty: Optional[str]
+    qty_step: Optional[str]
+    post_only_max_order_qty: Optional[str]
+    max_market_order_qty: Optional[str]
     # price columns
-    max_price: Optional[Decimal] = Field(sa_column=DECIMAL(38, 10))
-    min_price: Optional[Decimal] = Field(sa_column=DECIMAL(38, 10))
-    price_scale: Optional[int]
-    price_tick_size: Optional[Decimal] = Field(sa_column=DECIMAL(38, 10))
+    max_price: Optional[str]
+    min_price: Optional[str]
+    price_scale: Optional[str]
+    price_tick_size: Optional[str]
