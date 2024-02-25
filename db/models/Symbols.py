@@ -13,7 +13,7 @@ class BBPerpetualSymbolsDaily(SQLModel, table=True):
     symbol: str
     status: str
     contract_type: str
-    has_copy_trading: bool
+    copy_trading: Optional[str]
     has_unified_margin_trade: bool
     base_coin: str
     quote_coin: str
@@ -34,6 +34,7 @@ class BBPerpetualSymbolsDaily(SQLModel, table=True):
     max_order_qty: Optional[Decimal] = Field(sa_column=DECIMAL(38, 10))
     qty_step: Optional[Decimal] = Field(sa_column=DECIMAL(38, 10))
     post_only_max_order_qty: Optional[Decimal] = Field(sa_column=DECIMAL(38, 10))
+    max_market_order_qty: Optional[Decimal] = Field(sa_column=DECIMAL(38, 10))
     # price columns
     max_price: Optional[Decimal] = Field(sa_column=DECIMAL(38, 10))
     min_price: Optional[Decimal] = Field(sa_column=DECIMAL(38, 10))
