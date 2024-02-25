@@ -17,7 +17,18 @@ async def root():
 def get_symbols(session: Session = Depends(get_session)):
     result = session.exec(select(Symbols.BBPerpetualSymbolsDaily))
     symbols = result.all()
-    return [symbols]
+    return symbols
+
+
+@app.post("/symbols")
+def add_symbols(
+    symbol: Symbols.BBPerpetualSymbolsDaily,
+    session: Session = Depends(get_session),
+):
+    session.add(symbol)
+    session.commit()
+    session.refresh(symbol)
+    return symbol
 
 
 if __name__ == "__main__":

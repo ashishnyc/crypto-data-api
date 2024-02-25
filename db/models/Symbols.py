@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date
 from decimal import Decimal
 from typing import Optional, Annotated
 from click import Option
@@ -9,7 +9,7 @@ from sqlalchemy import BigInteger, Column, DECIMAL
 class BBPerpetualSymbolsDaily(SQLModel, table=True):
     __tablename__ = "bb_perp_symbols_daily"  # type: ignore
     id: Optional[int] = Field(default=None, primary_key=True)
-    downloaded_at: datetime = datetime.now()
+    downloaded_at: date = date.today()
     symbol: str
     status: str
     contract_type: str
