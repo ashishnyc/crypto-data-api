@@ -1,28 +1,27 @@
-from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
-
-from .config import (
-    DB_HOST as host,
-    DB_PORT as port,
-    DB_USERNAME as uname,
-    DB_PASSWORD as passwd,
-    DB_NAME as db,
-)
-
-SQLALCHEMY_DATABASE_URL = f"postgresql+psycopg2://{uname}:{passwd}@{host}:{port}/{db}"
-
-engine = create_engine(
-    SQLALCHEMY_DATABASE_URL,
-    future=True,
-)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine, future=True)
-
-Base = declarative_base()
+import os
+from sqlmodel import SQLModel, create_engine, Session
+from db.models import Symbols
 
 
-def get_db():
-    db = SessionLocal()
+def get_db_connection_str():
+    uname = os.environ.get("DB_USER", "")
+    passwd = os.environ.get("DB_PASS", "")
+    host = os.environ.get("DB_HOST", "")
+    port = os.environ.get("DB_PORT", "")
+    db = os.environ.get("DB_NAME", "")
+    return f"postgresql+psycopg2://{uname}:{passwd}@{host}:{port}/{db}"
+
+
+def get_engine():
+    return create_engine(get_db_connection_str(), future=True)
+
+
+def create_db_and_tables():
+    SQLModel.metadata.create_all(get_engine())
+
+
+def get_session():
+    db = Session(get_engine())
     try:
         yield db
     finally:
