@@ -4,6 +4,8 @@ from sqlmodel import Session, select
 import uvicorn
 from db.db_setup import create_db_and_tables, get_session
 from db.models import Symbols
+import utils
+import sys
 
 app = FastAPI()
 
@@ -44,4 +46,6 @@ def add_spot_symbols(
 
 if __name__ == "__main__":
     create_db_and_tables()
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+    args = utils.parse_arguments(sys.argv[1:])
+    host, port = utils.get_host_and_port(env=args.env)
+    uvicorn.run(app, host=host, port=port)
