@@ -1,9 +1,6 @@
 from datetime import date
-from decimal import Decimal
-from typing import Optional, Annotated
-from click import Option
+from typing import Optional
 from sqlmodel import Field, SQLModel
-from sqlalchemy import BigInteger, Column, DECIMAL
 
 
 class BBPerpetualSymbolsDaily(SQLModel, table=True):
@@ -40,3 +37,24 @@ class BBPerpetualSymbolsDaily(SQLModel, table=True):
     min_price: Optional[str]
     price_scale: Optional[str]
     price_tick_size: Optional[str]
+
+
+class BBSpotSymbolsDaily(SQLModel, table=True):
+    __tablename__ = "bb_spot_symbols_daily"  # type: ignore
+    id: Optional[int] = Field(default=None, primary_key=True)
+    downloaded_at: date = date.today()
+    symbol: str
+    base_coin: Optional[str]
+    quote_coin: Optional[str]
+    innovation: Optional[str]
+    status: Optional[str]
+    margin_trading: Optional[str]
+    base_precision: Optional[str]
+    quote_precision: Optional[str]
+    min_order_qty: Optional[str]
+    max_order_qty: Optional[str]
+    min_order_amt: Optional[str]
+    max_order_amt: Optional[str]
+    price_tick_size: Optional[str]
+    risk_limit_parameter: Optional[str]
+    risk_market_parameter: Optional[str]

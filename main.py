@@ -31,6 +31,17 @@ def add_symbols(
     return symbol
 
 
+@app.post("/symbols/spot")
+def add_spot_symbols(
+    symbol: Symbols.BBSpotSymbolsDaily,
+    session: Session = Depends(get_session),
+):
+    session.add(symbol)
+    session.commit()
+    session.refresh(symbol)
+    return symbol
+
+
 if __name__ == "__main__":
     create_db_and_tables()
     uvicorn.run(app, host="127.0.0.1", port=8000)
