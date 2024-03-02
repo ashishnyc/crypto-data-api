@@ -43,8 +43,12 @@ def get_host_and_port(env: str) -> tuple:
 
 
 def authenticate_user(credentials: HTTPBasicCredentials = Depends(security)):
-    correct_username = secrets.compare_digest(credentials.username, "your_username")
-    correct_password = secrets.compare_digest(credentials.password, "your_password")
+    correct_username = secrets.compare_digest(
+        credentials.username, os.environ.get("DATA_API_USER", "")
+    )
+    correct_password = secrets.compare_digest(
+        credentials.password, os.environ.get("DATA_API_PASS", "")
+    )
     if not (correct_username and correct_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
