@@ -10,22 +10,21 @@ import sys
 app = FastAPI()
 
 
-@app.get("/")
-async def root():
-    return {"message": "Hello World"}
-
-
-@app.get("/symbols", response_model=list[Symbols.BBPerpetualSymbolsDaily])
-def get_symbols(session: Session = Depends(get_session)):
+@app.get("/symbols/all", response_model=list[Symbols.BBPerpetualSymbolsDaily])
+def get_symbols(
+    session: Session = Depends(get_session),
+    username: str = Depends(utils.authenticate_user),
+):
     result = session.exec(select(Symbols.BBPerpetualSymbolsDaily))
     symbols = result.all()
     return symbols
 
 
-@app.post("/symbols")
+@app.post("/symbols/perpetual")
 def add_symbols(
     symbol: Symbols.BBPerpetualSymbolsDaily,
     session: Session = Depends(get_session),
+    username: str = Depends(utils.authenticate_user),
 ):
     session.add(symbol)
     session.commit()
@@ -37,11 +36,17 @@ def add_symbols(
 def add_spot_symbols(
     symbol: Symbols.BBSpotSymbolsDaily,
     session: Session = Depends(get_session),
+    username: str = Depends(utils.authenticate_user),
 ):
     session.add(symbol)
     session.commit()
     session.refresh(symbol)
     return symbol
+
+
+@app.get("/process/raw-data")
+def process_raw_data():
+    pass
 
 
 if __name__ == "__main__":

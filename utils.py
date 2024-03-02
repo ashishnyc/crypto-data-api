@@ -1,5 +1,11 @@
 import os
 import argparse
+from fastapi import Depends, HTTPException, status
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
+import secrets
+import secrets
+
+security = HTTPBasic()
 
 
 def get_loggly_config_location() -> str:
@@ -34,3 +40,15 @@ def get_host_and_port(env: str) -> tuple:
     if env == "local":
         return ("127.0.0.1", 1234)
     return ("0.0.0.0", 1234)
+
+
+def authenticate_user(credentials: HTTPBasicCredentials = Depends(security)):
+    correct_username = secrets.compare_digest(credentials.username, "your_username")
+    correct_password = secrets.compare_digest(credentials.password, "your_password")
+    if not (correct_username and correct_password):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect email or password",
+            headers={"WWW-Authenticate": "Basic"},
+        )
+    return credentials.username
