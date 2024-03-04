@@ -1,3 +1,4 @@
+from datetime import date
 import select
 from fastapi import Depends, FastAPI
 from sqlmodel import Session, select
@@ -45,8 +46,12 @@ def add_spot_symbols(
 
 
 @app.get("/process/raw-data")
-def process_raw_data():
-    pass
+def process_raw_data(
+    session: Session = Depends(get_session),
+    username: str = Depends(utils.authenticate_user),
+):
+    ds = date.today().strftime("%Y-%m-%d")
+    utils.process_perp_daily_data(session=session, ds=ds)
 
 
 if __name__ == "__main__":
