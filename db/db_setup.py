@@ -22,4 +22,7 @@ def create_db_and_tables():
 
 def get_session():
     db = Session(get_engine())
-    return db
+    try:
+        yield db
+    finally:
+        db.close()
