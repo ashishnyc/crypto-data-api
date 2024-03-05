@@ -235,7 +235,6 @@ class BBSpotSymbolsDaily(SQLModel, table=True):
 
         innovation = self.innovation or "0"
         innovation = True if innovation == "1" else False
-        print(innovation)
         return innovation
 
     def get_status(self) -> str:
