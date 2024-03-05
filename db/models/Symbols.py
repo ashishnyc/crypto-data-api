@@ -220,3 +220,95 @@ class BBSpotSymbolsDaily(SQLModel, table=True):
     price_tick_size: Optional[str]
     risk_limit_parameter: Optional[str]
     risk_market_parameter: Optional[str]
+
+    def get_base_coin(self) -> str:
+        coin = self.base_coin or Constants.UNKNOWN
+        coin = utils.update_none_to_unknown(coin)
+        return coin
+
+    def get_quote_coin(self) -> str:
+        coin = self.quote_coin or Constants.UNKNOWN
+        coin = utils.update_none_to_unknown(coin)
+        return coin
+
+    def get_innovation(self) -> bool:
+
+        innovation = self.innovation or "0"
+        innovation = True if innovation == "1" else False
+        print(innovation)
+        return innovation
+
+    def get_status(self) -> str:
+        status = self.status or Constants.UNKNOWN
+        status = utils.update_none_to_unknown(status)
+        return status
+
+    def get_margin_trading(self) -> str:
+        margin = self.margin_trading or Constants.UNKNOWN
+        margin = utils.update_none_to_unknown(margin)
+        return margin
+
+    def get_base_precision(self) -> Decimal:
+        precision = self.base_precision or "0.0"
+        precision = precision.upper().replace("NONE", "0.0")
+        return Decimal(precision)
+
+    def get_quote_precision(self) -> Decimal:
+        precision = self.quote_precision or "0.0"
+        precision = precision.upper().replace("NONE", "0.0")
+        return Decimal(precision)
+
+    def get_min_order_qty(self) -> Decimal:
+        qty = self.min_order_qty or "0.0"
+        qty = qty.upper().replace("NONE", "0.0")
+        return Decimal(qty)
+
+    def get_max_order_qty(self) -> Decimal:
+        qty = self.max_order_qty or "0.0"
+        qty = qty.upper().replace("NONE", "0.0")
+        return Decimal(qty)
+
+    def get_min_order_amt(self) -> Decimal:
+        amt = self.min_order_amt or "0.0"
+        amt = amt.upper().replace("NONE", "0.0")
+        return Decimal(amt)
+
+    def get_max_order_amt(self) -> Decimal:
+        amt = self.max_order_amt or "0.0"
+        amt = amt.upper().replace("NONE", "0.0")
+        return Decimal(amt)
+
+    def get_price_tick_size(self) -> Decimal:
+        tick = self.price_tick_size or "0.0"
+        tick = tick.upper().replace("NONE", "0.0")
+        return Decimal(tick)
+
+    def get_risk_limit_parameter(self) -> Decimal:
+        risk = self.risk_limit_parameter or "0.0"
+        risk = risk.upper().replace("NONE", "0.0")
+        return Decimal(risk)
+
+    def get_risk_market_parameter(self) -> Decimal:
+        risk = self.risk_market_parameter or "0.0"
+        risk = risk.upper().replace("NONE", "0.0")
+        return Decimal(risk)
+
+
+class BBSpotSymbols(SQLModel, table=True):
+    __tablename__ = "bb_spot_symbols"  # type: ignore
+    id: Optional[int] = Field(default=None, primary_key=True)
+    symbol: str
+    base_coin: Optional[str] = Constants.UNKNOWN
+    quote_coin: Optional[str] = Constants.UNKNOWN
+    innovation: Optional[bool] = Field(default=False)
+    status: Optional[str] = Constants.UNKNOWN
+    margin_trading: Optional[str] = Constants.UNKNOWN
+    base_precision: Decimal = Field(default=0.0, max_digits=38, decimal_places=10)
+    quote_precision: Decimal = Field(default=0.0, max_digits=38, decimal_places=10)
+    min_order_qty: Decimal = Field(default=0.0, max_digits=38, decimal_places=10)
+    max_order_qty: Decimal = Field(default=0.0, max_digits=38, decimal_places=10)
+    min_order_amt: Decimal = Field(default=0.0, max_digits=38, decimal_places=10)
+    max_order_amt: Decimal = Field(default=0.0, max_digits=38, decimal_places=10)
+    price_tick_size: Decimal = Field(default=0.0, max_digits=38, decimal_places=10)
+    risk_limit_parameter: Decimal = Field(default=0.0, max_digits=10, decimal_places=2)
+    risk_market_parameter: Decimal = Field(default=0.0, max_digits=10, decimal_places=2)

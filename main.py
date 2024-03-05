@@ -52,6 +52,7 @@ def process_raw_data(
 ):
     ds = date.today().strftime("%Y-%m-%d")
     utils.process_perp_daily_data(session=session, ds=ds)
+    utils.process_spot_daily_data(session=session, ds=ds)
 
 
 if __name__ == "__main__":

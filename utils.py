@@ -101,3 +101,31 @@ def process_perp_daily_data(session, ds):
         new_or_old.price_tick_size = r.get_price_tick_size()
         session.add(new_or_old)
         session.commit()
+
+
+def process_spot_daily_data(session, ds):
+    d_stmt = select(Symbols.BBSpotSymbolsDaily)
+    d_stmt = d_stmt.where(Symbols.BBSpotSymbolsDaily.downloaded_at == ds)
+    ds_symbols = session.exec(d_stmt).all()
+    for r in ds_symbols:
+        stmt = select(Symbols.BBSpotSymbols)
+        stmt = stmt.where(Symbols.BBSpotSymbols.symbol == r.symbol)
+        new_or_old = session.exec(stmt).one_or_none()
+        if new_or_old is None:
+            new_or_old = Symbols.BBSpotSymbols(symbol=r.symbol)
+        new_or_old.base_coin = r.get_base_coin()
+        new_or_old.quote_coin = r.get_quote_coin()
+        new_or_old.innovation = r.get_innovation()
+        new_or_old.status = r.get_status()
+        new_or_old.margin_trading = r.get_margin_trading()
+        new_or_old.base_precision = r.get_base_precision()
+        new_or_old.quote_precision = r.get_quote_precision()
+        new_or_old.min_order_qty = r.get_min_order_qty()
+        new_or_old.max_order_qty = r.get_max_order_qty()
+        new_or_old.min_order_amt = r.get_min_order_amt()
+        new_or_old.max_order_amt = r.get_max_order_amt()
+        new_or_old.price_tick_size = r.get_price_tick_size()
+        new_or_old.risk_limit_parameter = r.get_risk_limit_parameter()
+        new_or_old.risk_market_parameter = r.get_risk_market_parameter()
+        session.add(new_or_old)
+        session.commit()
