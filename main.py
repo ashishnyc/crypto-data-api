@@ -4,8 +4,9 @@ from datetime import date, datetime
 from fastapi import Depends, FastAPI
 from sqlmodel import Session, select
 import uvicorn
-from db.db_setup import create_db_and_tables, get_session
+from db.db_setup import get_session
 from db.models import Symbols
+from db import db_setup
 
 import sys
 
@@ -63,7 +64,7 @@ def process_raw_data(
 
 if __name__ == "__main__":
     logger.info("Starting the app")
-    create_db_and_tables()
+    db_setup.create_db_and_tables()
     args = utils.parse_arguments(sys.argv[1:])
     host, port = utils.get_host_and_port(env=args.env)
     uvicorn.run(app, host=host, port=port)
