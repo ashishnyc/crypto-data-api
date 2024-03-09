@@ -1,6 +1,6 @@
 import logging
 import utils
-from datetime import date
+from datetime import date, datetime
 from fastapi import Depends, FastAPI
 from sqlmodel import Session, select
 import uvicorn
@@ -30,6 +30,8 @@ def add_symbols(
     session: Session = Depends(get_session),
     username: str = Depends(utils.authenticate_user),
 ):
+    # default value does not work
+    symbol.downloaded_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     session.add(symbol)
     session.commit()
     session.refresh(symbol)
@@ -42,6 +44,7 @@ def add_spot_symbols(
     session: Session = Depends(get_session),
     username: str = Depends(utils.authenticate_user),
 ):
+    symbol.downloaded_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     session.add(symbol)
     session.commit()
     session.refresh(symbol)

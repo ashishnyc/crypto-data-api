@@ -9,7 +9,7 @@ import utils
 class BBPerpetualSymbolsDaily(SQLModel, table=True):
     __tablename__ = "bb_perp_symbols_daily"  # type: ignore
     id: Optional[int] = Field(default=None, primary_key=True)
-    downloaded_at: date = date.today()
+    downloaded_at: str = "1900-01-01 00:00:00"
     symbol: str
     status: Optional[str]
     contract_type: Optional[str]
@@ -204,7 +204,7 @@ class BBPerpetualSymbols(SQLModel, table=True):
 class BBSpotSymbolsDaily(SQLModel, table=True):
     __tablename__ = "bb_spot_symbols_daily"  # type: ignore
     id: Optional[int] = Field(default=None, primary_key=True)
-    downloaded_at: date = date.today()
+    downloaded_at: str = "1900-01-01 00:00:00"
     symbol: str
     base_coin: Optional[str]
     quote_coin: Optional[str]
