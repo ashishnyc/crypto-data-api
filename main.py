@@ -32,7 +32,8 @@ def add_symbols(
     username: str = Depends(utils.authenticate_user),
 ):
     # default value does not work
-    symbol.downloaded_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    dt = datetime.now().replace(microsecond=0, minute=0, second=0)
+    symbol.downloaded_at = dt.strftime("%Y-%m-%d %H:%M:%S")
     session.add(symbol)
     session.commit()
     session.refresh(symbol)
@@ -45,7 +46,8 @@ def add_spot_symbols(
     session: Session = Depends(get_session),
     username: str = Depends(utils.authenticate_user),
 ):
-    symbol.downloaded_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    dt = datetime.now().replace(microsecond=0, minute=0, second=0)
+    symbol.downloaded_at = dt.strftime("%Y-%m-%d %H:%M:%S")
     session.add(symbol)
     session.commit()
     session.refresh(symbol)
