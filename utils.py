@@ -3,10 +3,9 @@ import argparse
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 import secrets
-import secrets
 from db.models import Constants
 from db.models import Symbols
-from sqlmodel import select
+from sqlmodel import select, func
 from logtail import LogtailHandler
 import logging
 
@@ -68,9 +67,11 @@ def update_none_to_unknown(value: str) -> str:
 
 
 def process_perp_daily_data(session, ds):
-    d_stmt = select(Symbols.BBPerpetualSymbolsDaily)
-    d_stmt = d_stmt.where(Symbols.BBPerpetualSymbolsDaily.downloaded_at == ds)
-    ds_symbols = session.exec(d_stmt).all()
+    daily_tbl = Symbols.BBPerpetualSymbolsDaily
+    ds_stmt = select(func.max(daily_tbl.downloaded_at).label("max_ds"))
+    latest_ds = session.exec(ds_stmt).one_or_none()
+    latest_snapshot = select(daily_tbl).where(daily_tbl.downloaded_at == latest_ds)
+    ds_symbols = session.exec(latest_snapshot).all()
     for r in ds_symbols:
         stmt = select(Symbols.BBPerpetualSymbols)
         stmt = stmt.where(Symbols.BBPerpetualSymbols.symbol == r.symbol)
@@ -106,9 +107,12 @@ def process_perp_daily_data(session, ds):
 
 
 def process_spot_daily_data(session, ds):
-    d_stmt = select(Symbols.BBSpotSymbolsDaily)
-    d_stmt = d_stmt.where(Symbols.BBSpotSymbolsDaily.downloaded_at == ds)
-    ds_symbols = session.exec(d_stmt).all()
+    daily_tbl = Symbols.BBSpotSymbolsDaily
+    ds_stmt = select(func.max(daily_tbl.downloaded_at).label("max_ds"))
+    latest_ds = session.exec(ds_stmt).one_or_none()
+    latest_snapshot = select(daily_tbl).where(daily_tbl.downloaded_at == latest_ds)
+    ds_symbols = session.exec(latest_snapshot).all()
+
     for r in ds_symbols:
         stmt = select(Symbols.BBSpotSymbols)
         stmt = stmt.where(Symbols.BBSpotSymbols.symbol == r.symbol)
