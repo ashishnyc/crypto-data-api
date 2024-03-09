@@ -1,13 +1,15 @@
+import logging
+import utils
 from datetime import date
-import select
 from fastapi import Depends, FastAPI
 from sqlmodel import Session, select
 import uvicorn
 from db.db_setup import create_db_and_tables, get_session
 from db.models import Symbols
-import utils
+
 import sys
 
+logger = utils.get_logger(logging.getLogger())
 app = FastAPI()
 
 
@@ -16,6 +18,7 @@ def get_symbols(
     session: Session = Depends(get_session),
     username: str = Depends(utils.authenticate_user),
 ):
+
     result = session.exec(select(Symbols.BBPerpetualSymbolsDaily))
     symbols = result.all()
     return symbols
@@ -56,6 +59,7 @@ def process_raw_data(
 
 
 if __name__ == "__main__":
+    logger.info("Starting the app")
     create_db_and_tables()
     args = utils.parse_arguments(sys.argv[1:])
     host, port = utils.get_host_and_port(env=args.env)

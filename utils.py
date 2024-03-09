@@ -7,6 +7,8 @@ import secrets
 from db.models import Constants
 from db.models import Symbols
 from sqlmodel import select
+from logtail import LogtailHandler
+import logging
 
 security = HTTPBasic()
 
@@ -129,3 +131,11 @@ def process_spot_daily_data(session, ds):
         new_or_old.risk_market_parameter = r.get_risk_market_parameter()
         session.add(new_or_old)
         session.commit()
+
+
+def get_logger(logger):
+    handler = LogtailHandler(source_token=os.environ.get("LOGTAIL_SOURCE_TOKEN"))
+    logger.setLevel(logging.INFO)
+    logger.handlers = []
+    logger.addHandler(handler)
+    return logger

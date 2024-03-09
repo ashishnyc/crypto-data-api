@@ -1,6 +1,9 @@
 import os
 from sqlmodel import SQLModel, create_engine, Session
 from db.models import Symbols
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def get_db_connection_str():
@@ -17,6 +20,7 @@ def get_engine():
 
 
 def create_db_and_tables():
+    logger.info("Creating Database and Tables")
     SQLModel.metadata.create_all(get_engine())
 
 
