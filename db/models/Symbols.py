@@ -1,4 +1,4 @@
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from decimal import Decimal
 from typing import Optional
 from sqlmodel import Field, SQLModel
@@ -199,6 +199,15 @@ class BBPerpetualSymbols(SQLModel, table=True):
     min_price: Decimal = Field(default=0.0, max_digits=38, decimal_places=10)
     price_scale: Optional[int] = 0
     price_tick_size: Decimal = Field(default=0.0, max_digits=38, decimal_places=10)
+
+    def get_dates_from_launch_time(self) -> list:
+        dates = []
+        today = date.today()
+        launch_time = self.launch_time.date()
+        while launch_time <= today:
+            dates.append(launch_time.strftime("%Y-%m-%d"))
+            launch_time = launch_time + timedelta(days=1)
+        return dates
 
 
 class BBSpotSymbolsDaily(SQLModel, table=True):

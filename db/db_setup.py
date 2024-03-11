@@ -1,6 +1,6 @@
 import os
 from sqlmodel import SQLModel, create_engine, Session
-from db.models import Symbols
+from db.models import Symbols, Klines
 import logging
 
 logger = logging.getLogger(__name__)
