@@ -10,6 +10,7 @@ class ByBitPerpetualKlineDownloadSchedule(SQLModel, table=True):
     symbol: str
     kline_date: date
     is_downloaded: bool = Field(default=False)
+    error: str = Field(default="")
 
     def is_exists(self, session):
         tbl = ByBitPerpetualKlineDownloadSchedule
