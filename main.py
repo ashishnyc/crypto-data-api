@@ -4,7 +4,7 @@ from datetime import date, datetime
 
 import uvicorn
 from fastapi import Depends, FastAPI
-from sqlmodel import Session, select
+from sqlmodel import Session, select, not_
 
 import utils
 from db import db_setup
@@ -106,6 +106,37 @@ def produce_perp_klines_schedule_for_symbol_and_date(
     username: str = Depends(utils.authenticate_user),
 ):
     return ops.create_perp_kline_schedule(symbol=symbol, kline_date=kline_date, session=session)
+
+
+@app.post("/update/perp/klines-schedule")
+def update_perp_klines_schedule(
+    schedule: Klines.ByBitPerpetualKlineDownloadSchedule,
+    session: Session = Depends(get_session),
+    username: str = Depends(utils.authenticate_user),
+):
+    tbl_schedule = Klines.ByBitPerpetualKlineDownloadSchedule
+    old_schedule = session.exec(select(tbl_schedule).where(
+        tbl_schedule.id == schedule.id)).one_or_none()
+    old_schedule.is_downloaded = schedule.is_downloaded  # type: ignore
+    old_schedule.error = schedule.error  # type: ignore
+    session.add(old_schedule)
+    session.commit()
+    session.refresh(old_schedule)
+    return old_schedule
+
+
+@app.get("/perp/klines-schedule", response_model=list[Klines.ByBitPerpetualKlineDownloadSchedule])
+def retrieve_perp_klines_schedule(
+    session: Session = Depends(get_session),
+    username: str = Depends(utils.authenticate_user),
+):
+    limit = 10
+    tbl_schedule = Klines.ByBitPerpetualKlineDownloadSchedule
+    stmt = select(tbl_schedule).where(not_(tbl_schedule.is_downloaded))
+    stmt = stmt.limit(limit)
+    result = session.exec(stmt)
+    schedules = result.all()
+    return schedules
 
 
 if __name__ == "__main__":
