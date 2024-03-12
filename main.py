@@ -26,7 +26,7 @@ def get_symbols(
     return symbols
 
 
-@app.post("/symbols/perpetual")
+@app.post("/symbols/perp")
 def add_symbols(
     symbol: Symbols.BBPerpetualSymbolsDaily,
     session: Session = Depends(get_session),
