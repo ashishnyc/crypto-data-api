@@ -16,12 +16,22 @@ logger = utils.get_logger(logging.getLogger())
 app = FastAPI()
 
 
-@app.get("/symbols/all", response_model=list[Symbols.BBPerpetualSymbolsDaily])
-def get_symbols(
+@app.get("/symbols/perp/all", response_model=list[Symbols.BBPerpetualSymbols])
+def get_perp_symbols(
     session: Session = Depends(get_session),
     username: str = Depends(utils.authenticate_user),
 ):
-    result = session.exec(select(Symbols.BBPerpetualSymbolsDaily))
+    result = session.exec(select(Symbols.BBPerpetualSymbols))
+    symbols = result.all()
+    return symbols
+
+
+@app.get("/symbols/spot/all", response_model=list[Symbols.BBSpotSymbols])
+def get_spot_symbols(
+    session: Session = Depends(get_session),
+    username: str = Depends(utils.authenticate_user),
+):
+    result = session.exec(select(Symbols.BBSpotSymbols))
     symbols = result.all()
     return symbols
 
