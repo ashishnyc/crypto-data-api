@@ -11,58 +11,18 @@ from db import db_setup
 from db import operations as ops
 from db.db_setup import get_session
 from db.models import Klines, Symbols
+from routers import Schedule, Upload, Constants, Process, Markets
 
 logger = utils.get_logger(logging.getLogger())
-app = FastAPI()
+app = FastAPI(
+    dependencies=[Depends(utils.authenticate_user)],
+    openapi_tags=Constants.tags_metadata,
+)
 
-
-@app.get("/symbols/perp/all", response_model=list[Symbols.BBPerpetualSymbols])
-def get_perp_symbols(
-    session: Session = Depends(get_session),
-    username: str = Depends(utils.authenticate_user),
-):
-    result = session.exec(select(Symbols.BBPerpetualSymbols))
-    symbols = result.all()
-    return symbols
-
-
-@app.get("/symbols/spot/all", response_model=list[Symbols.BBSpotSymbols])
-def get_spot_symbols(
-    session: Session = Depends(get_session),
-    username: str = Depends(utils.authenticate_user),
-):
-    result = session.exec(select(Symbols.BBSpotSymbols))
-    symbols = result.all()
-    return symbols
-
-
-@app.post("/symbols/perp")
-def add_symbols(
-    symbol: Symbols.BBPerpetualSymbolsDaily,
-    session: Session = Depends(get_session),
-    username: str = Depends(utils.authenticate_user),
-):
-    # default value does not work
-    dt = datetime.now().replace(microsecond=0, minute=0, second=0)
-    symbol.downloaded_at = dt.strftime("%Y-%m-%d %H:%M:%S")
-    session.add(symbol)
-    session.commit()
-    session.refresh(symbol)
-    return symbol
-
-
-@app.post("/symbols/spot")
-def add_spot_symbols(
-    symbol: Symbols.BBSpotSymbolsDaily,
-    session: Session = Depends(get_session),
-    username: str = Depends(utils.authenticate_user),
-):
-    dt = datetime.now().replace(microsecond=0, minute=0, second=0)
-    symbol.downloaded_at = dt.strftime("%Y-%m-%d %H:%M:%S")
-    session.add(symbol)
-    session.commit()
-    session.refresh(symbol)
-    return symbol
+app.include_router(Upload.router, prefix="/upload")
+app.include_router(Markets.router, prefix="/markets")
+app.include_router(Process.router, prefix="/process")
+app.include_router(Schedule.router, prefix="/schedule")
 
 
 @app.get("/process/raw-data")
@@ -75,68 +35,9 @@ def process_raw_data(
     utils.process_spot_daily_data(session=session, ds=ds)
 
 
-@app.get("/produce/perp/klines-schedule")
-def produce_perp_klines_schedule(
-    session: Session = Depends(get_session),
-    username: str = Depends(utils.authenticate_user),
-):
-    tbl_symbol = Symbols.BBPerpetualSymbols
-    perp_symbols_stmt = select(tbl_symbol)
-    perp_symbols = session.exec(perp_symbols_stmt).all()
-    for perp_symbol in perp_symbols:
-        ops.create_perp_kline_schedule(
-            symbol=perp_symbol.symbol, session=session)
-    return "Kline Schedule Created"
-
-
-@app.get("/produce/perp/klines-schedule/{symbol}")
-def produce_perp_klines_schedule_for_symbol(
-    symbol: str,
-    session: Session = Depends(get_session),
-    username: str = Depends(utils.authenticate_user),
-):
-    return ops.create_perp_kline_schedule(symbol=symbol, session=session)
-
-
-@app.get("/produce/perp/klines-schedule/{symbol}/{kline_date}")
-def produce_perp_klines_schedule_for_symbol_and_date(
-    symbol: str,
-    kline_date: date,
-    session: Session = Depends(get_session),
-    username: str = Depends(utils.authenticate_user),
-):
-    return ops.create_perp_kline_schedule(symbol=symbol, kline_date=kline_date, session=session)
-
-
-@app.post("/update/perp/klines-schedule")
-def update_perp_klines_schedule(
-    schedule: Klines.ByBitPerpetualKlineDownloadSchedule,
-    session: Session = Depends(get_session),
-    username: str = Depends(utils.authenticate_user),
-):
-    tbl_schedule = Klines.ByBitPerpetualKlineDownloadSchedule
-    old_schedule = session.exec(select(tbl_schedule).where(
-        tbl_schedule.id == schedule.id)).one_or_none()
-    old_schedule.is_downloaded = schedule.is_downloaded  # type: ignore
-    old_schedule.error = schedule.error  # type: ignore
-    session.add(old_schedule)
-    session.commit()
-    session.refresh(old_schedule)
-    return old_schedule
-
-
-@app.get("/perp/klines-schedule", response_model=list[Klines.ByBitPerpetualKlineDownloadSchedule])
-def retrieve_perp_klines_schedule(
-    session: Session = Depends(get_session),
-    username: str = Depends(utils.authenticate_user),
-):
-    limit = 10
-    tbl_schedule = Klines.ByBitPerpetualKlineDownloadSchedule
-    stmt = select(tbl_schedule).where(not_(tbl_schedule.is_downloaded))
-    stmt = stmt.limit(limit)
-    result = session.exec(stmt)
-    schedules = result.all()
-    return schedules
+@app.get("/")
+async def read_main():
+    return {"msg": "Hello World"}
 
 
 if __name__ == "__main__":
